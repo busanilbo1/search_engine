@@ -1,0 +1,100 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:jee="http://www.springframework.org/schema/jee"
+	xmlns:aop="http://www.springframework.org/schema/aop" xmlns:context="http://www.springframework.org/schema/context"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans 
+		http://www.springframework.org/schema/beans/spring-beans-3.0.xsd 
+		http://www.springframework.org/schema/jee 
+		http://www.springframework.org/schema/jee/spring-jee-3.0.xsd 
+		http://www.springframework.org/schema/aop 
+		http://www.springframework.org/schema/aop/spring-aop-3.0.xsd
+		http://www.springframework.org/schema/context
+		http://www.springframework.org/schema/context/spring-context-3.0.xsd">
+
+	<context:annotation-config />
+	<!--   <context:property-placeholder location="/WEB-INF/conf/spring/context/xml.properties"/> -->
+	<context:property-placeholder location="/WEB-INF/conf/spring/context/*.properties"/>
+	
+	<!-- Services -->
+	<bean id="searchService" class="com.filab.open.search.service.SearchServiceImpl">
+		<property name="client" ref="searchClient" />
+	</bean>
+	
+	<bean id="httpConnectionManagerParams" class="org.apache.commons.httpclient.params.HttpConnectionManagerParams">
+		<property name="connectionTimeout" value="1000" /> <!-- connect timeout 3 seconds -->
+		<property name="soTimeout" value="1500" /> <!-- read & write timeout 5 seconds -->
+		<property name="defaultMaxConnectionsPerHost" value="100" /> <!-- not used in SimpleHttpConnectionManager. The default maximum number of connections allowed per host: 2 -->
+		<property name="maxTotalConnections" value="3000" /> <!-- not used in SimpleHttpConnectionManager. The default maximum number of connections allowed overall: 20 -->
+	</bean>
+	
+	<bean id="httpConnectionManager" class="org.apache.commons.httpclient.MultiThreadedHttpConnectionManager">
+		<property name="params" ref="httpConnectionManagerParams" />
+	</bean>
+
+	<bean id="httpClient" class="org.apache.commons.httpclient.HttpClient">
+		<constructor-arg ref="httpConnectionManager" />
+	</bean>
+
+	<bean id="clientHttpRequestFactory" class="com.filab.open.search.client.internal.CommonsClientIdleAwareHttpRequestFactory" >
+		<constructor-arg ref="httpClient" />
+		<property name="timeoutInterval" value="1000" /> <!-- idle-check time interval 1 seconds -->
+		<property name="connectionTimeout" value="1500" /> <!-- idle timeout 3 seconds. less than the timeout of search server -->
+	</bean>
+
+	<bean id="searchClient" class="com.filab.open.search.client.SearchHttpClient">
+		<property name="unmarshaller" ref="xStreamMarshaller" />
+		<property name="factory" ref="clientHttpRequestFactory" />
+		<property name="uriEncoding" value="UTF-8" />
+		<property name="targetUrls">		
+			<map>	
+			  
+				 <!--  서버 -->		
+				
+			    <entry key="com.filab.open.search.command.TotalContentsRequest" value="http://ip/"/>			   
+				<entry key="com.filab.open.search.command.TotalWordRequest" value="http://ip/"/>
+								
+			</map>
+		</property>
+	</bean>	
+	
+	<bean id="domDriver" class="com.thoughtworks.xstream.io.xml.DomDriver" />
+	<bean id="xStreamMarshaller" class="org.springframework.oxm.xstream.XStreamMarshaller">
+		<property name="encoding" value="${xml.encoding}" />
+		<property name="streamDriver" ref="domDriver" />
+		<property name="autodetectAnnotations" value="true" />
+		<property name="aliases">
+			<props>
+				<prop key="ssearch">com.filab.open.search.domain.Ssearch</prop>
+				<prop key="output">com.filab.open.search.domain.Result</prop>				
+			</props>
+		</property>
+	</bean>
+	
+
+		<bean id="xppDriver" class="com.filab.open.search.xstream.io.xml.CustomizedXppDriver" >
+		<constructor-arg>
+		    <bean class="com.thoughtworks.xstream.io.xml.XmlFriendlyReplacer">
+		        <constructor-arg index="0" value="__"/>
+		        <constructor-arg index="1" value="_"/>
+		    </bean>
+		</constructor-arg>
+		<property name="version" value="${xml.version}" />
+		<property name="encoding" value="${xml.encoding}" />
+	</bean>
+	<bean id="unmarshallerForXmlView" class="org.springframework.oxm.xstream.XStreamMarshaller">
+		<property name="encoding" value="${xml.encoding}" />
+		<property name="autodetectAnnotations" value="true" />
+	    <property name="streamDriver" ref="xppDriver" />
+	</bean>
+	
+
+	<!--
+	 <bean id="trendService" class="com.alticast.kt.search.service.TrendServiceImpl" >
+		<property name="trendVodPath" value="#{systemProperties['defTrendXml.path']}/default_trend_word.xml" />
+				
+    </bean> 
+-->
+   <bean id="analDefaultService" class="com.filab.open.search.service.AnalDefaultServiceImpl" >
+		<property name="amidicpath" value="#{systemProperties['defDicBase.pathDic']}" />		
+</bean>
+</beans>

@@ -1,0 +1,106 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<web-app id="ser" version="2.5"
+ xmlns="http://java.sun.com/xml/ns/javaee"
+ xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://java.sun.com/xml/ns/javaee http://java.sun.com/xml/ns/javaee/web-app_2_5.xsd">
+ <description>openSearch Server</description>
+ <display-name>openSearch</display-name>
+ <!-- configure context parameters -->
+ <context-param>
+  <param-name>contextConfigLocation</param-name>
+  <param-value>/WEB-INF/conf/spring/context/*Context.xml</param-value>
+ </context-param>
+ <context-param>
+  <param-name>log4jConfigLocation</param-name>
+  <param-value>/WEB-INF/conf/log4j.xml</param-value>
+ </context-param>
+ <context-param>
+  <param-name>webAppRootKey</param-name>
+  <param-value>openSearch.root</param-value>
+ </context-param>
+ <!-- configure filters -->
+ <filter>
+  <filter-name>SetCharacterEncodingFilter</filter-name>
+  <filter-class>org.springframework.web.filter.CharacterEncodingFilter</filter-class>
+  <init-param>
+   <param-name>encoding</param-name>
+   <param-value>UTF-8</param-value>
+  </init-param>
+  <init-param>
+   <param-name>forceEncoding</param-name>
+   <param-value>true</param-value>
+  </init-param>
+ </filter>
+<!--  client connection close -->
+<filter>
+<filter-name>ReplyHeaderFilter</filter-name>
+<filter-class>org.jboss.web.tomcat.filters.ReplyHeaderFilter</filter-class>
+	<init-param>
+		<param-name>Connection</param-name>
+		<param-value>Close</param-value>
+	</init-param>
+</filter>
+
+<filter>
+    <filter-name>cors</filter-name>
+    <filter-class>com.filab.open.search.util.CorsFilter</filter-class>
+</filter>
+
+<filter-mapping>
+    <filter-name>cors</filter-name>
+    <url-pattern>/*</url-pattern>
+</filter-mapping>
+
+ <!-- configure filter-mappings -->
+ <filter-mapping>
+  <filter-name>SetCharacterEncodingFilter</filter-name>
+  <url-pattern>/*</url-pattern>
+ </filter-mapping>
+
+ <filter-mapping>
+  <filter-name>ReplyHeaderFilter</filter-name>
+  <url-pattern>/*</url-pattern>
+</filter-mapping>
+
+ <!-- configure listener -->
+ <listener>
+  <listener-class>org.springframework.web.util.Log4jConfigListener</listener-class>
+ </listener>
+ <listener>
+  <listener-class>org.springframework.web.context.ContextLoaderListener</listener-class>
+ </listener>
+ <!-- configure servlet -->
+ <servlet>
+  <servlet-name>openSearch</servlet-name>
+  <servlet-class>org.springframework.web.servlet.DispatcherServlet</servlet-class>
+  <init-param>
+   <param-name>contextConfigLocation</param-name>
+   <param-value>/WEB-INF/conf/spring/web/*Context.xml</param-value>
+  </init-param>
+  <load-on-startup>1</load-on-startup>
+ </servlet>
+ <!-- configure servlet-mappings 
+
+	<servlet-mapping>
+		<servlet-name>recommSearch</servlet-name>
+		<url-pattern>/*</url-pattern>
+	</servlet-mapping>
+	-->
+  <servlet-mapping>
+  <servlet-name>openSearch</servlet-name>
+  <url-pattern>/totalSearch</url-pattern>
+ </servlet-mapping>
+  <servlet-mapping>
+  <servlet-name>openSearch</servlet-name>
+  <url-pattern>/autoComplete</url-pattern>
+ </servlet-mapping>
+
+ 
+ <!-- configure session -->
+ <session-config>
+  <session-timeout>1</session-timeout>
+ </session-config>
+ <!-- configure welcome-file -->
+ <welcome-file-list>
+  <welcome-file>index.html</welcome-file>
+ </welcome-file-list>
+</web-app>

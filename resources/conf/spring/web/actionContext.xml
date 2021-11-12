@@ -1,0 +1,69 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:context="http://www.springframework.org/schema/context"
+	xmlns:mvc="http://www.springframework.org/schema/mvc" xmlns:p="http://www.springframework.org/schema/p"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-3.0.xsd
+		http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-3.0.xsd
+		http://www.springframework.org/schema/mvc http://www.springframework.org/schema/mvc/spring-mvc-3.0.xsd">
+
+	<context:annotation-config />
+
+	<!-- ===== Resolver ========================================= -->
+	<!-- view resolver -->
+	<!-- 
+	<bean class="org.springframework.web.servlet.view.ContentNegotiatingViewResolver">
+		<property name="order" value="1" />
+		<property name="mediaTypes">
+			<map>
+				<entry key="xml" value="application/xml"/>
+				<entry key="html" value="text/html"/>
+				<entry key="json" value="application/json"/>
+			</map>
+		</property>
+		<property name="viewResolvers">
+			<list>
+				<bean class="org.springframework.web.servlet.view.BeanNameViewResolver" />
+			</list>
+		</property>
+		<property name="ignoreAcceptHeader" value="true" />
+	</bean>
+	<bean class="org.springframework.web.servlet.view.XmlViewResolver">
+  		<property name="order" value="2"/>
+  		<property name="location" value="/WEB-INF/conf/spring/web/views.xml"/>
+	</bean>
+	<bean class="org.springframework.web.servlet.view.InternalResourceViewResolver">
+		<property name="order" value="3" />
+		<property name="prefix" value="/" />
+		<property name="suffix" value=".html" />
+	</bean>
+	-->
+
+	<bean class="org.springframework.web.servlet.view.XmlViewResolver">
+  		<property name="order" value="1"/>
+  		<property name="location" value="/WEB-INF/conf/spring/web/views.xml"/>
+	</bean>
+
+	<bean class="org.springframework.web.servlet.view.InternalResourceViewResolver">
+		<property name="order" value="2" />
+		<property name="prefix" value="/" />
+		<property name="suffix" value=".html" />
+	</bean>
+
+	
+	<mvc:annotation-driven />
+	
+	<!-- ===== Controllers ========================================= -->
+	<!-- 
+	<mvc:view-controller path="/" view-name="index" />-->	
+	
+	
+	<bean id="totalwordController" class="com.filab.open.search.controller.TotalWordController" />
+	<bean id="totalContentsController" class="com.filab.open.search.controller.TotalContentsController" />
+	
+	<!-- ===== Validators ========================================= -->
+	<!--
+	<bean id="" class="" />
+	-->
+		<!-- URL Mapping Spring 3.0 Style -->
+	
+</beans>
